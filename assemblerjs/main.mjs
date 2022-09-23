@@ -1,0 +1,3 @@
+const ASSEMBBLERJS = 'ASSEMBLERJS';
+
+console.log(ASSEMBBLERJS);
