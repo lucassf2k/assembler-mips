@@ -1,5 +1,5 @@
 import { instructionsFilteredByTypeI, instructionsFilteredByTypeR, instructionsFilteredByTypeJ } from './instructionsFiltereds.mjs';
-import { instructions, registerTable } from '../data/instructions.mjs';
+import { registerTable } from '../data/instructions.mjs';
 import * as convert from '../utils/baseConverter.mjs';
 
 function convertACommandLineToBinaryForTypeR(line) {
