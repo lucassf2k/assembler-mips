@@ -1,24 +1,38 @@
-import { open } from 'node:fs/promises';
-import path from 'path';
+import { open, writeFile } from 'node:fs/promises';
 
-import { isTypeI, isTypeJ } from './convertACommandLineToBinary.mjs';
-
-const directory = path.resolve('tmp', 'teste.asm');
-
+async function readFile(filename) {
 let fileHandle;
+let usefulLines;
 
 try {
-     fileHandle = await open(directory, 'r');
+     fileHandle = await open(filename, 'r');
 
      const file = await fileHandle.readFile({ encoding: 'utf-8' });
      
-     const usefulLines = file.split('\n').filter((line) => line.trim());
+     usefulLines = file.split('\n').filter((line) => line.trim());
 
-     //console.log(usefulLines);
+     fileHandle?.close();
+     
+} catch (err) {
+     console.log(err);
+     await fileHandle?.close();
+}
 
+return usefulLines;
+}
+
+async function write(filename, data) {
+     try {
+          await writeFile(filename, data);
+     } catch (err) {
+          console.log(err);
+     }
+}
+
+
+ // colocar os labels com sua respecitiva linha em uma tabela
+function getLabelsTable(usefulLines) {
      let labelsTable = [];
-
-     // colocar os labels com sua respecitiva linha em uma tabela
      usefulLines.forEach((line, index) => {
           if (line.includes(':')) {
                labelsTable.push({
@@ -28,11 +42,7 @@ try {
           } 
      });
 
-     usefulLines.forEach((line) => console.log(line, isTypeJ(line)));
-     console.log(labelsTable);
-
-
-} catch (err) {
-     console.log(err);
-     await fileHandle?.close();
+     return labelsTable;
 }
+
+export { readFile, getLabelsTable, write };

@@ -1,0 +1,23 @@
+{
+  "name": "assemblerjs",
+  "version": "1.0.0",
+  "description": "## abra o terminal na pasta \"assemblerjs\" e rode o seguinte comonado:",
+  "main": "main.mjs",
+  "scripts": {
+    "dev": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucassf2k/assemblerjs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lucassf2k/assemblerjs/issues"
+  },
+  "homepage": "https://github.com/lucassf2k/assemblerjs#readme",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
