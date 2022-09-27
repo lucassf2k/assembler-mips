@@ -1,3 +1,5 @@
+// Serve como se fosse um banco de dados para filtrar. Como também para pegar os valores 
+// certos dos opcode e funct
 const instructions = [
    { sll: { type: 'R', op: 0, rs: 9, rt: 10, rd: 8, shamt: 3, funct: 0 } },
    { slr: { type: 'R', op: 0, rs: 0, rt: 10, rd: 8, shamt: 3, funct: 2 } },
@@ -32,6 +34,7 @@ const instructions = [
    { jal: { type: 'J', op: 3, address: 1000 } },
 ];
 
+// serve como um banco de dados para pegar os valores correspondentes aos registradores
 const registerTable = {
    $t0: 8,
    $t1: 9,

@@ -1,6 +1,7 @@
 import { open, writeFile } from 'node:fs/promises';
 
-async function readFile(filename) {
+// função para ler o arquivo
+async function read(filename) {
 let fileHandle;
 let usefulLines;
 
@@ -9,7 +10,7 @@ try {
 
      const file = await fileHandle.readFile({ encoding: 'utf-8' });
      
-     usefulLines = file.split('\n').filter((line) => line.trim());
+     usefulLines = file.split('\n').filter((line) => line.trim()); // tira as linhas que estão completamentes vazias
 
      fileHandle?.close();
      
@@ -18,9 +19,10 @@ try {
      await fileHandle?.close();
 }
 
-return usefulLines;
+return usefulLines; // retorna as linhas uteis
 }
 
+// função para salvar os dados no arquivo
 async function write(filename, data) {
      try {
           await writeFile(filename, data);
@@ -33,11 +35,14 @@ async function write(filename, data) {
  // colocar os labels com sua respecitiva linha em uma tabela
 function getLabelsTable(usefulLines) {
      let labelsTable = [];
+
+     // percorre as linhas já uteis que são as linhas que possuem instruções e sem linhas vazias
      usefulLines.forEach((line, index) => {
+          // separa a linha por ':' assim obtemos label
           if (line.includes(':')) {
                labelsTable.push({
-                    label: line.split(' ')[0].split(':')[0],
-                    line: index,
+                    label: line.split(' ')[0].split(':')[0], // no caso quando separa por ':' têm-se dois valores e o primeiro do array é o label
+                    line: index, // guardando o index para saber qual a linha é esse label
                });
           } 
      });
@@ -45,4 +50,4 @@ function getLabelsTable(usefulLines) {
      return labelsTable;
 }
 
-export { readFile, getLabelsTable, write };
+export { read, getLabelsTable, write };
