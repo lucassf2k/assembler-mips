@@ -3,7 +3,7 @@
 ## abra o terminal na pasta "assemblerjs" e rode o seguinte comonado:
 
 ```
-npm install
+npm install // para instalar as dependências
 
-npm run dev ou yarn dev
+npm run dev ou yarn dev ou node main.mjs // para rodar de fato o programa
 ```
