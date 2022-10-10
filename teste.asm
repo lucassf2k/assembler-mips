@@ -1,4 +1,5 @@
-L1: add $t0, $s1, $s2
-L2: addi $t1, $s3, 7
+L1: add $t0, $t2, $t3
+L2: sub $t1, $t2, $t3
  beq $t0, $t1, L1
  j L2
+ j L1

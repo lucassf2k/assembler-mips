@@ -7,7 +7,9 @@ function baseConverter(
 ) {
   const binary = parseInt(number, baseFrom).toString(baseTo); // retorna o valor já convertido dependendo dos parêmetros
 
-  const zeroLeft = size ? '0'.repeat(size - binary.length) : ''; // fiz para obter a conversão em um tamanho específico
+  const calculateSize = (size - binary.length) < 0 ? 0 : (size - binary.length); 
+
+  const zeroLeft = size ? '0'.repeat(calculateSize) : ''; // fiz para obter a conversão em um tamanho específico
   
   return `${zeroLeft}${binary}`; // retorna a conversão concatenando com os zeros a esquerda no binário
 }

@@ -2,7 +2,7 @@
 // certos dos opcode e funct
 const instructions = [
    { sll: { type: 'R', op: 0, rs: 9, rt: 10, rd: 8, shamt: 3, funct: 0 } },
-   { slr: { type: 'R', op: 0, rs: 0, rt: 10, rd: 8, shamt: 3, funct: 2 } },
+   { srl: { type: 'R', op: 0, rs: 0, rt: 10, rd: 8, shamt: 3, funct: 2 } },
    { jr: { type: 'R', op: 0, rs: 8, rt: 0, rd: 0, shamt: 0, funct: 8 } },
    { mfhi: { type: 'R', op: 0, rs: 0, rt: 0, rd: 8, shamt: 0, funct: 16 } },
    { mflo: { type: 'R', op: 0, rs: 0, rt: 0, rd: 8, shamt: 0, funct: 18 }},

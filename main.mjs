@@ -21,11 +21,14 @@ try {
 
 const labels = getLabelsTable(file); // pega todos os labels do arquivo
 
+//console.log(labels)
+
 let address = Number(convert.toConvertHexToDec('0x00400000')); // transforma o endereço inical em binário
 let codeAsm = []; // array aonde será colocado todas as instruções já convertidas em binário 
 
 // percorre todas as linhas do arquivo e separa por tipos e chama a função correspondente aquele tipo da instrução
 file.forEach((line, index) => {
+  //console.log(line)
   if (isTypeR(line)) {
     codeAsm.push(convertACommandLineToBinaryForTypeR(line)); // adiciona no array que será colocado no arquivo.bin
     address += 4; // soma mais 4 para obter a próxima linha do arquivo
@@ -37,6 +40,7 @@ file.forEach((line, index) => {
     address += 4; // soma mais 4 para obter a próxima linha do arquivo
   } else {
     console.log("Erro ao analisar o arquivo");
+    console.log(line);
   }
 });
 
