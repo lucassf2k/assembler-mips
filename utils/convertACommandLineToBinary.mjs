@@ -48,7 +48,7 @@ function convertACommandLineToBinaryForTypeR(line) {
   // pego o op correspondente ao da instrução pelo nome da chave da instrução modelo filtrada acima
   // desta mesma forma pego o registrador correspondente a partir do registerModel lá do pasta data
   // assim como a funct correspondente
-  return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(regRT == 0 ? 0 : registerTable[regRT], 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${regRT == 0 ? convert.toConvertDecToBin(regRT, 3) : convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
 } else if (
   
   operator == 'mult' || operator == 'multu' || 

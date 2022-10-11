@@ -18,16 +18,39 @@ const filename = question("Digite o nome do arquivo: ");
 
 try {
   const file = await read(filename); // ler o arquivo que foi obtido pelo terminal
-
-const labels = getLabelsTable(file); // pega todos os labels do arquivo
+  
+const fileFormated = formatFile(file);
+const labels = getLabelsTable(fileFormated); // pega todos os labels do arquivo
 
 //console.log(labels)
 
 let address = Number(convert.toConvertHexToDec('0x00400000')); // transforma o endereço inical em binário
 let codeAsm = []; // array aonde será colocado todas as instruções já convertidas em binário 
 
+function formatFile(file) {
+  let mounFile = [];
+  let str = '';
+  file.forEach(line => {
+    const lineInChar = line.split('');
+    for (let i = 0; i < lineInChar.length; i++) {
+      if (lineInChar[i] == '\t') {
+        str += ' ';
+      } else if (lineInChar[i] == ',' && !lineInChar[i+1] == ' ') {
+        str += ', ';
+      } else {
+        str += lineInChar[i];
+      }
+    }
+    mounFile.push(str);
+    str = '';
+  });
+
+  return mounFile;
+}
+
+//console.log(fileFormated)
 // percorre todas as linhas do arquivo e separa por tipos e chama a função correspondente aquele tipo da instrução
-file.forEach((line, index) => {
+fileFormated.forEach((line, index) => {
   //console.log(line)
   if (isTypeR(line)) {
     codeAsm.push(convertACommandLineToBinaryForTypeR(line)); // adiciona no array que será colocado no arquivo.bin

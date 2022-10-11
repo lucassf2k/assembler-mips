@@ -36,12 +36,14 @@ async function write(filename, data) {
 function getLabelsTable(usefulLines) {
      let labelsTable = [];
 
+     //const fileFormated = usefulLines.filter((line) => line.trim());
+     //console.log(fileFormated)
      // percorre as linhas já uteis que são as linhas que possuem instruções e sem linhas vazias
      usefulLines.forEach((line, index) => {
           // separa a linha por ':' assim obtemos label
           if (line.includes(':')) {
                labelsTable.push({
-                    label: line.split(' ')[0].split(':')[0], // no caso quando separa por ':' têm-se dois valores e o primeiro do array é o label
+                    label: line.trim().split(' ')[0].split(':')[0], // no caso quando separa por ':' têm-se dois valores e o primeiro do array é o label
                     line: index, // guardando o index para saber qual a linha é esse label
                });
           } 
