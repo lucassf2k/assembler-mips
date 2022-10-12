@@ -1,7 +1,7 @@
 // importações das funções 
 import { question } from 'readline-sync'; 
 
-import { getLabelsTable, read, write } from './utils/fileHandler.mjs'; 
+import { getLabelsTable, read, write, formatFile } from './utils/fileHandler.mjs'; 
 import { 
   isTypeI, 
   isTypeJ, 
@@ -20,46 +20,23 @@ try {
   const file = await read(filename); // ler o arquivo que foi obtido pelo terminal
   
 const fileFormated = formatFile(file);
-const labels = getLabelsTable(fileFormated); // pega todos os labels do arquivo
+const labels = getLabelsTable(fileFormated.mountFile); // pega todos os labels do arquivo
 
-//console.log(labels)
 
 let address = Number(convert.toConvertHexToDec('0x00400000')); // transforma o endereço inical em binário
 let codeAsm = []; // array aonde será colocado todas as instruções já convertidas em binário 
 
-function formatFile(file) {
-  let mounFile = [];
-  let str = '';
-  file.forEach(line => {
-    const lineInChar = line.split('');
-    for (let i = 0; i < lineInChar.length; i++) {
-      if (lineInChar[i] == '\t') {
-        str += ' ';
-      } else if (lineInChar[i] == ',' && !lineInChar[i+1] == ' ') {
-        str += ', ';
-      } else {
-        str += lineInChar[i];
-      }
-    }
-    mounFile.push(str);
-    str = '';
-  });
-
-  return mounFile;
-}
-
-//console.log(fileFormated)
 // percorre todas as linhas do arquivo e separa por tipos e chama a função correspondente aquele tipo da instrução
-fileFormated.forEach((line, index) => {
+fileFormated.mountFile.forEach((line, index) => {
   //console.log(line)
   if (isTypeR(line)) {
-    codeAsm.push(convertACommandLineToBinaryForTypeR(line)); // adiciona no array que será colocado no arquivo.bin
+    codeAsm.push(convertACommandLineToBinaryForTypeR(line, fileFormated.hasRegister)); // adiciona no array que será colocado no arquivo.bin
     address += 4; // soma mais 4 para obter a próxima linha do arquivo
   } else if (isTypeI(line)) {
-    codeAsm.push(convertACommandLineToBinaryForTypeI(line, index, address, labels)); // adiciona no array que será colocado no arquivo.bin
+    codeAsm.push(convertACommandLineToBinaryForTypeI(line, index, address, labels, fileFormated.hasRegister)); // adiciona no array que será colocado no arquivo.bin
     address += 4; // soma mais 4 para obter a próxima linha do arquivo
   } else if (isTypeJ(line)) {
-    codeAsm.push(convertACommandLineToBinaryForTypeJ(line, index, address, labels)); // adiciona no array que será colocado no arquivo.bin
+    codeAsm.push(convertACommandLineToBinaryForTypeJ(line, index, address, labels, fileFormated.hasRegister)); // adiciona no array que será colocado no arquivo.bin
     address += 4; // soma mais 4 para obter a próxima linha do arquivo
   } else {
     console.log("Erro ao analisar o arquivo");
@@ -71,6 +48,8 @@ const code  = codeAsm.map((line) => line.concat('\n')); // adiiona em cada linha
 
 const fileSaved = filename.split('.')[0].concat('.bin'); // pegar o nome do arquivo obtido pelo terminal e o coloca com o mesmo nome com a extensão .bin
 await write(fileSaved, code); // salva o array das linhas já convetidas em binário em um arquivo .bin
+
+console.log(`Arquivo gerado: ${fileSaved}`);
 
 } catch (err) {
   console.log(err);

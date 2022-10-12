@@ -3,7 +3,7 @@ import { registerTable } from '../data/instructions.mjs';
 import * as convert from '../utils/baseConverter.mjs';
 
 // função que executa a lógica para as instruções do tipo R
-function convertACommandLineToBinaryForTypeR(line) {
+function convertACommandLineToBinaryForTypeR(line, hasRegister) {
   const arrayLine = line.split(' '); // separa os valores da linhas 
   const arrayLineFiltered = arrayLine.filter((item) => item.trim()); // tira espaços vazios da linha
 
@@ -16,8 +16,22 @@ function convertACommandLineToBinaryForTypeR(line) {
   } else {
     operator = arrayLineFiltered[0]
   }
-  const register = arrayLine.filter((item) => item.includes('$')); // verifica se na linha tem $ assim filtrando todos os registradores dessa linha
 
+  let register = [];
+
+  if (hasRegister) {
+    register = arrayLineFiltered.filter((item) => item.includes('$')); // verifica se na linha tem $ assim filtrando todos os registradores dessa linha
+    
+  } else {
+    const tmpRegister = arrayLineFiltered.filter((item) => item.includes('$')); 
+
+    tmpRegister.forEach((item) => {
+      const arrayRegister = item.split('');
+      register.push(arrayRegister[1]);
+    });
+
+  }
+  
   // separo por instruções que possuem três registradores
  if (
   operator == 'add' || operator == 'addu' || operator == 'sub' ||
@@ -32,23 +46,21 @@ function convertACommandLineToBinaryForTypeR(line) {
 
   const instructionModel = instruction[0]; // do array retorna só tem um possível então estar na posição 0
   // separando por virgulas temos todos os registradores separados
-  let regRD;
-  let regRS;
-  let regRT;
-  let shamt = 0;
-  regRD = register[0].split(',')[0]; // pego o primeiro
-  regRS = register[1].split(',')[0]; // pego o segundo
-  if (register.length == 3) {
-    regRT = register[2].split(',')[0].split('\r')[0]; // pego o terceiro
-  } else {
-    regRT = 0;
-    shamt = arrayLine[arrayLine.length - 1].split('\r')[0]; // pego o terceiro
-  }
+ 
+  const regRD = register[0].split(',')[0]; // pego o primeiro
+  const regRS = register[1].split(',')[0]; // pego o segundo
+  const regRT = register[2].split(',')[0]; // pego o terceiro
+
   // retorno uma string com os dados já convertidos em binário
   // pego o op correspondente ao da instrução pelo nome da chave da instrução modelo filtrada acima
   // desta mesma forma pego o registrador correspondente a partir do registerModel lá do pasta data
   // assim como a funct correspondente
-  return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${regRT == 0 ? convert.toConvertDecToBin(regRT, 3) : convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+
+  if (hasRegister) {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  } else {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(regRS, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(regRD, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  }
 } else if (
   
   operator == 'mult' || operator == 'multu' || 
@@ -63,11 +75,15 @@ function convertACommandLineToBinaryForTypeR(line) {
 
   const instructionModel = instruction[0];
   const regRS = register[0].split(',')[0]; // pego o primeiro registrador
-  const regRT = register[1].split(',')[0].split('\r')[0]; // pego o segundo
+  const regRT = register[1].split(',')[0]; // pego o segundo
 
   // retorno a string como a de cima
   // usando as funções da pasta data para pegar os valores de op e funct correspondetes pelo nome da chave do objeto
-  return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  if (hasRegister) {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  } else {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(regRS, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  }
 } else if (
   operator == 'mfhi' || operator == 'mflo'
 ) {
@@ -77,9 +93,13 @@ function convertACommandLineToBinaryForTypeR(line) {
   );
 
   const instructionModel = instruction[0];
-  const regRD = register[0].split(',')[0].split('\r')[0]; // pego o único registrador
+  const regRD = register[0].split(',')[0]; // pego o único registrador
 
-  return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(instructionModel[operator].rs, 5)}${convert.toConvertDecToBin(instructionModel[operator].rt, 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(instructionModel[operator].shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  if (hasRegister) {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(instructionModel[operator].rs, 5)}${convert.toConvertDecToBin(instructionModel[operator].rt, 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(instructionModel[operator].shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  } else {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(instructionModel[operator].rs, 5)}${convert.toConvertDecToBin(instructionModel[operator].rt, 5)}${convert.toConvertDecToBin(regRD, 5)}${convert.toConvertDecToBin(instructionModel[operator].shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  }
 } else if (
   operator == 'sll' || operator == 'srl'
 ) {
@@ -91,10 +111,14 @@ function convertACommandLineToBinaryForTypeR(line) {
   const instructionModel = instruction[0];
   const regRD = register[0].split(',')[0]; // pego o primeiro registrador
   const regRT = register[1].split(',')[0]; // pego o segundo registrador 
-  const shamt = arrayLine[arrayLine.length - 1].split('\r')[0]; // pego o valor pelo index - 1 para pegar o último elemento do array
+  const shamt = arrayLine[arrayLine.length - 1]; // pego o valor pelo index - 1 para pegar o último elemento do array
 
   // usando as instruções da pasta data como base para obter os opcode e funct correponde ao operator
-  return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  if (hasRegister) {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(registerTable[regRD], 5)}${convert.toConvertDecToBin(shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  } else {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(regRD, 5)}${convert.toConvertDecToBin(shamt, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  }
 } else if (operator == 'jr') {
 
   // o que possui apenas um registrador
@@ -103,15 +127,19 @@ function convertACommandLineToBinaryForTypeR(line) {
   );
 
   const instructionModel = instruction[0];
-  const regRS = register[0].split('\r')[0]; // pego o único registrador da linhas
+  const regRS = register[0]; // pego o único registrador da linhas
 
-  return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  if (hasRegister) {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  } else {
+    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(regRS, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(instructionModel[operator].funct, 6)}`;
+  }
 } else {
   return 'ERRO';
 }
 }
 
-function convertACommandLineToBinaryForTypeI(line, index, address, labels) {
+function convertACommandLineToBinaryForTypeI(line, index, address, labels, hasRegister) {
   // repete a mesma lógica da função acime 
   // poderia até ser uma outra função em uma versão futura do projeto
   const arrayLine = line.split(' ');
@@ -123,7 +151,28 @@ function convertACommandLineToBinaryForTypeI(line, index, address, labels) {
   } else {
     operator = arrayLineFiltered[0]
   }
-  const register = arrayLine.filter((item) => item.includes('$'));
+
+  let register = [];
+
+  if (hasRegister) {
+    register = arrayLineFiltered.filter((item) => item.includes('$')); // verifica se na linha tem $ assim filtrando todos os registradores dessa linha
+  } else {
+    const tmpRegister = arrayLineFiltered.filter((item) => item.includes('$')); 
+
+    tmpRegister.forEach((item) => {
+      const arrayRegister = item.split('');
+
+      if(arrayRegister.includes('(')) {
+        arrayRegister.forEach((item, index) => {
+          if (item == '$') {
+            register.push(arrayRegister[index+1]);
+          }
+        });
+      } else {
+        register.push(arrayRegister[1]);
+      }
+    });
+  }
 
   if (
     operator == 'addi' || operator == 'addiu' || operator == 'slti' ||
@@ -144,10 +193,14 @@ function convertACommandLineToBinaryForTypeI(line, index, address, labels) {
     // as funções acima também faz isso
     const regRT = register[0].split(',')[0]; // pego o primeiro registrador
     const regRS = register[1].split(',')[0]; // pego o segundo registrador
-    const immediate = arrayLineFiltered[arrayLineFiltered.length - 1].split('\r')[0]; // pego o immediate pela posição do array. como ele sempre é o último elemento então é o index - 1
+    const immediate = arrayLine[arrayLine.length - 1]; // pego o immediate pela posição do array. como ele sempre é o último elemento então é o index - 1
 
     // usa as instruções da pasta data como modelo para pegar opcode correspondente ao operator pelo nome da chave
-    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    if (hasRegister) {
+      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    } else {
+      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(regRS, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    }
   } else if (
     operator == 'bne' || operator == 'beq'
   ) {
@@ -158,9 +211,9 @@ function convertACommandLineToBinaryForTypeI(line, index, address, labels) {
     ); 
 
     const instructionModel = instruction[0];
-    const regRT = register[0].split(',')[0]; // pego o primeiro registrador
-    const regRS = register[1].split(',')[0]; // pego o segundo registrador
-    const immediate = arrayLine[arrayLine.length - 1].split('\r')[0];// pego o immediate que aqui pode ser uma constante ou address
+    const regRS = register[0].split(',')[0]; // pego o primeiro registrador
+    const regRT = register[1].split(',')[0]; // pego o segundo registrador
+    const immediate = arrayLine[arrayLine.length - 1];// pego o immediate que aqui pode ser uma constante ou address
 
     // pego a label que foi anotada lá no arquivo main.mjs e guardada em um array
     // então pego a label que corresponde ao immediate dessa linha
@@ -174,17 +227,23 @@ function convertACommandLineToBinaryForTypeI(line, index, address, labels) {
       // para saber o endereço da linha do que contêm a declaração do label
       // faz-se o endereço inical + a linha do label * 4
       const addressLineLabel = addressInitial + (Number(label.line) * 4); 
-      // o endereço atual é endereço inical mas o index * 4
-      const currentAddress = addressInitial + (index * 4);
+  
       // para o cálculo do beq e bne faz-se o endereço da linha aonde foi declarado - o endereçõ atual * 4 tudo isso dividido para 4
-      const addressImmediate = (addressLineLabel - (currentAddress + 4)) / 4;
-
+      const addressImmediate = ((addressLineLabel - address) - 4) / 4;
       // igual as outros retornos mostrados anteriormente
-      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(addressImmediate, 16)}`;
+      if (hasRegister) {
+        return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(addressImmediate, 16)}`;
+      } else {
+        return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(regRS, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(addressImmediate, 16)}`;
+      }
     } else {
       // e se não for uma label 
       // pego o valor e coloca no immediate
-      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+      if (hasRegister) {
+        return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+      } else {
+        return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(regRS, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+      }
     }
   } else if (
     operator == 'lw' || operator == 'sw'
@@ -196,15 +255,28 @@ function convertACommandLineToBinaryForTypeI(line, index, address, labels) {
     ); 
 
     const instructionModel = instruction[0];
-    const regRT = register[0].split(',')[0]; // pego o primeiro registrador
-
+    
     // como a declaração é 0(registrador). separo por '(' assim resultando em dois 
     // 0( outro elemento é $t0)
-    const regRS = register[1].split('(')[1].split(')')[0]; // então separo por ')' sendo assim o primeiro elemento é o registraodr
-    const immediate = register[1].split('(')[0] // já o immediate tamvé é o primeiro elemento
+    let regRT = 0;
+    let regRS = 0;
+    let immediate = 0;
+    if (hasRegister) {
+      regRT = register[0].split(',')[0]; // pego o primeiro registrador
+      regRS = register[1].split('(')[1].split(')')[0]; // então separo por ')' sendo assim o primeiro elemento é o registraodr
+      immediate = register[1].split('(')[0] // já o immediate tamvé é o primeiro elemento
+    } else {
+      regRT = register[0]
+      regRS = register[1]; // então separo por ')' sendo assim o primeiro elemento é o registraodr
+      immediate = arrayLineFiltered[arrayLineFiltered.length - 1].split('(')[0]; // já o immediate tamvé é o primeiro elemento
+    }
     
     // faz a mesma funcionalidade que as outras 
-    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    if (hasRegister) {
+      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    } else {
+      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(regRS, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    }
   } else if (operator == 'lui') {
     // separa o que tem um registrador
     const instruction = instructionsFilteredByTypeI.filter((item) => 
@@ -213,15 +285,19 @@ function convertACommandLineToBinaryForTypeI(line, index, address, labels) {
 
     const instructionModel = instruction[0];
     const regRT = register[0].split(',')[0]; // pego o único registrador
-    const immediate = arrayLine[arrayLine.length - 1].split('\r')[0]; // pego o immediate pela posição pelo fato de o último
+    const immediate = arrayLine[arrayLine.length - 1]; // pego o immediate pela posição pelo fato de o último
 
-    return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    if (hasRegister) {
+      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    } else {
+      return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(0, 5)}${convert.toConvertDecToBin(regRT, 5)}${convert.toConvertDecToBin(immediate, 16)}`;
+    }
   } else {
     return 'ERRO';
   }
 }
 
-function convertACommandLineToBinaryForTypeJ(line, index, address, labels) {
+function convertACommandLineToBinaryForTypeJ(line, index, address, labels, hasRegister) {
   // segue a mesma lógicas das anteriores
   const arrayLine = line.split(' ');
   const arrayLineFiltered = arrayLine.filter((item) => item.trim());
@@ -238,7 +314,7 @@ function convertACommandLineToBinaryForTypeJ(line, index, address, labels) {
     const instruction = instructionsFilteredByTypeJ.filter((item) => 
       operator === Object.keys(item)[0]
     ); 
-    const immediate = arrayLineFiltered[1].split('\r')[0]; // como só duas instruções o segunda 1 é a do immediate
+    const immediate = arrayLineFiltered[1]; // como só duas instruções o segunda 1 é a do immediate
 
     const label = labels.filter((item) => item.label === immediate)[0]; // pego a label correspondente
 

@@ -68,7 +68,7 @@ function toConvertDecToBin(number, size = 0) {
   // se o número for menor que zero ele pega o binário desse número e transforma em complemento de dois
   // aonde pega o binário inverte todos os bite e soma 1 para obter-se o complemento de dois
   if (number < 0) {
-    return findTwoscomplement(baseConverter(number, size, 16, 2)); 
+    return findTwoscomplement(baseConverter(number, size, 10, 2)); 
   } else {
     return baseConverter(number, size, 10, 2);
   }

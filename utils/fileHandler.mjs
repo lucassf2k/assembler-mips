@@ -31,6 +31,34 @@ async function write(filename, data) {
      }
 }
 
+function formatFile(file) {
+     let mountFile = [];
+     let hasRegister = true;
+     let str = '';
+     file.forEach(line => {
+       const lineInChar = line.split('');
+       for (let i = 0; i < lineInChar.length; i++) {
+
+          if (lineInChar[i] == '$' && !(lineInChar[i+1] == 't' || lineInChar[i+1] == 's')) {
+               hasRegister = false;
+          }
+
+         if (lineInChar[i] == '\t') {
+           str += ' ';
+         } else if (lineInChar[i] == ',' && !lineInChar[i+1] == ' ') {
+           str += ', ';
+         } else if (lineInChar[i] == '\r' || lineInChar[i] == '\r\n') {
+           str += '\n';
+         } else {
+           str += lineInChar[i];
+         } 
+       }
+       mountFile.push(str);
+       str = '';
+     });
+   
+     return {mountFile, hasRegister};
+   }
 
  // colocar os labels com sua respecitiva linha em uma tabela
 function getLabelsTable(usefulLines) {
@@ -52,4 +80,4 @@ function getLabelsTable(usefulLines) {
      return labelsTable;
 }
 
-export { read, getLabelsTable, write };
+export { read, getLabelsTable, write, formatFile };

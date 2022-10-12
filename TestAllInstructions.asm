@@ -1,28 +1,28 @@
-	L1: add $t1,$t2,$t3
-	L2:	sub $t1,$t2,$t3
-		addi $t1,$t2,100
-		addu $t1,$t2,$t3
-		subu $t1,$t2,$t3
-		addiu $t1,$t2,100
-		mul $t1,$t2,$t3
-		mult $t2,$t3
-		multu $t2,$t3
-		div $t2,$t3
-		and $t1,$t2,$t3
-		or $t1,$t2,$t3
-		andi $t1,$t2,100
-		or $t1,$t2,100
-		sll $t1,$t2,10
-		srl $t1,$t2,10
-		lw $t1,100($t2)
-		sw $t1,100($t2)
-		lui $t1,100
-		mfhi $t2
-		mflo $t2
-	L3:	beq $t1,$t2,L1
-	 	bne $t1,$t2,L2
-		slt $t1,$t2,$t3
-		slti $t1,$t2,100
+	L1: add $1,$2,$3
+	L2:	sub $1,$2,$3
+		addi $1,$2,100
+		addu $1,$2,$3
+		subu $1,$2,$3
+		addiu $1,$2,100
+		mul $1,$2,$3
+		mult $2,$3
+		multu $2,$3
+		div $2,$3
+		and $1,$2,$3
+		or $1,$2,$3
+		andi $1,$2,100
+		ori $1,$2,100
+		sll $1,$2,10
+		srl $1,$2,10
+		lw $1,100($2)
+		sw $1,100($2)
+		lui $1,100
+		mfhi $2
+		mflo $2
+	L3:	beq $1,$2,L1
+	 	bne $1,$2,L2
+		slt $1,$2,$3
+		slti $1,$2,100
 		j L1
-		jr $t1
+		jr $1
 		jal L3
