@@ -49,8 +49,8 @@ function convertACommandLineToBinaryForTypeR(line, hasRegister) {
  
   const regRD = register[0].split(',')[0]; // pego o primeiro
   const regRS = register[1].split(',')[0]; // pego o segundo
-  const regRT = register[2].split(',')[0]; // pego o terceiro
-
+  const regRT = register[2] // pego o terceiro
+  
   // retorno uma string com os dados já convertidos em binário
   // pego o op correspondente ao da instrução pelo nome da chave da instrução modelo filtrada acima
   // desta mesma forma pego o registrador correspondente a partir do registerModel lá do pasta data
@@ -268,9 +268,14 @@ function convertACommandLineToBinaryForTypeI(line, index, address, labels, hasRe
     } else {
       regRT = register[0]
       regRS = register[1]; // então separo por ')' sendo assim o primeiro elemento é o registraodr
-      immediate = arrayLineFiltered[arrayLineFiltered.length - 1].split('(')[0]; // já o immediate tamvé é o primeiro elemento
+      
+      if (arrayLineFiltered.length == 4) {
+        immediate = arrayLineFiltered[2];
+      } else {
+        immediate = arrayLineFiltered[arrayLineFiltered.length - 1].split('(')[0]; // já o immediate tamvé é o primeiro elemento
+      }
     }
-    
+
     // faz a mesma funcionalidade que as outras 
     if (hasRegister) {
       return `${convert.toConvertDecToBin(instructionModel[operator].op, 6)}${convert.toConvertDecToBin(registerTable[regRS], 5)}${convert.toConvertDecToBin(registerTable[regRT], 5)}${convert.toConvertDecToBin(immediate, 16)}`;
