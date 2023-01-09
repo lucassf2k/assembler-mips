@@ -1,9 +1,16 @@
-# Como usar?
-## Os arquivos .asm devem estar na pasta "assemblerjs" ou seja no "." do diretório
-## abra o terminal na pasta "assemblerMipsjs" e rode o seguinte comonado:
+# How to use?
+
+## 1 - Install the dependencies
+```
+npm install or yarn
 
 ```
-npm install // para instalar as dependências
+## 2 - The .asm files must be in the "."
 
-npm run dev ou yarn dev ou node main.mjs // para rodar de fato o programa
+## 3 - Now just run
 ```
+npm run dev
+
+```
+
+### OBS.: The files must follow the example models available in the repository itself
