@@ -2,7 +2,8 @@
   "name": "assemblerjs",
   "version": "1.0.0",
   "description": "## abra o terminal na pasta \"assemblerjs\" e rode o seguinte comonado:",
-  "main": "main.mjs",
+  "main": "src/main.js",
+  "type": "module",
   "scripts": {
     "dev": "node ."
   },
